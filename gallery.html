@@ -9,7 +9,7 @@
 </head>
 <body>
 
-    <!-- Navigation (same as index) -->
+    <!-- Navigation -->
     <nav class="main-nav">
         <div class="nav-container">
             <a href="index.html" class="nav-logo"><img src="img/logo.jpg" alt="Logo" width="140"></a>
@@ -29,13 +29,11 @@
             <!-- images will be injected here -->
         </div>
 
-        <!-- Admin Upload Section (hidden by default) -->
+        <!-- Admin Upload Section -->
         <div id="adminUpload" style="display:none; margin-top:50px; padding:30px; background:#f8faff; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.06);">
             <h3 style="margin-bottom:20px;"><i class="fas fa-upload"></i> Upload Gallery Images</h3>
             <form id="galleryUploadForm" style="display:flex; flex-direction:column; gap:16px; max-width:500px;">
-                <!-- ▲ MULTIPLE FILES ALLOWED ▲ -->
                 <input type="file" id="galleryImageInput" accept="image/*" multiple required style="padding:10px; border:1px solid #ddd; border-radius:8px;">
-                <!-- ▲ CAPTION IS NOW OPTIONAL ▲ -->
                 <input type="text" id="galleryCaption" placeholder="Caption (optional – applied to all)" style="padding:12px; border:1px solid #ddd; border-radius:8px;">
                 <button type="submit" class="btn">Upload All Images</button>
             </form>
@@ -44,13 +42,16 @@
     </section>
 
     <script>
-        // Check login status
+        // --- Check login ---
         const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
+        console.log('Admin logged in?', isAdmin);
         if (isAdmin) {
             document.getElementById('adminUpload').style.display = 'block';
+        } else {
+            console.warn('Not logged in – upload section hidden.');
         }
 
-        // Load gallery from localStorage
+        // --- Load gallery ---
         function loadGallery() {
             const stored = localStorage.getItem('galleryItems');
             let items = stored ? JSON.parse(stored) : [];
@@ -74,7 +75,6 @@
             });
         }
 
-        // Delete item
         function deleteGalleryItem(index) {
             if (!confirm('Delete this image?')) return;
             let items = JSON.parse(localStorage.getItem('galleryItems') || '[]');
@@ -83,16 +83,34 @@
             loadGallery();
         }
 
-        // ▲ MULTI‑FILE UPLOAD HANDLER ▲
+        // --- Upload handler with debugging ---
         document.getElementById('galleryUploadForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            console.log('Upload form submitted.');
+
             const fileInput = document.getElementById('galleryImageInput');
             const caption = document.getElementById('galleryCaption').value.trim() || 'Untitled';
             const files = fileInput.files;
-            if (!files.length) {
+
+            console.log('Selected files:', files);
+
+            if (!files || files.length === 0) {
                 document.getElementById('uploadMsg').textContent = '❌ Please select at least one image.';
                 document.getElementById('uploadMsg').style.color = '#cc0000';
+                console.warn('No files selected.');
                 return;
+            }
+
+            // Check total size before starting (localStorage limit ~5MB per domain)
+            let totalSize = 0;
+            for (let i = 0; i < files.length; i++) {
+                totalSize += files[i].size;
+            }
+            console.log('Total upload size (bytes):', totalSize);
+            if (totalSize > 4.5 * 1024 * 1024) { // 4.5 MB warning
+                if (!confirm('⚠️ These images are large (' + (totalSize/1024/1024).toFixed(1) + ' MB). localStorage may fail if total exceeds ~5 MB. Continue?')) {
+                    return;
+                }
             }
 
             let items = JSON.parse(localStorage.getItem('galleryItems') || '[]');
@@ -101,12 +119,22 @@
 
             function checkAndSave() {
                 loaded++;
+                console.log(`Processed ${loaded}/${total}`);
                 if (loaded === total) {
-                    localStorage.setItem('galleryItems', JSON.stringify(items));
-                    document.getElementById('uploadMsg').textContent = `✅ ${total} image(s) uploaded successfully!`;
-                    document.getElementById('uploadMsg').style.color = '#0066ff';
-                    document.getElementById('galleryUploadForm').reset();
-                    loadGallery();
+                    try {
+                        localStorage.setItem('galleryItems', JSON.stringify(items));
+                        document.getElementById('uploadMsg').textContent = `✅ ${total} image(s) uploaded successfully!`;
+                        document.getElementById('uploadMsg').style.color = '#0066ff';
+                        document.getElementById('galleryUploadForm').reset();
+                        loadGallery();
+                        console.log('All images saved to localStorage.');
+                    } catch (storageError) {
+                        // Usually quota exceeded
+                        alert('❌ Storage error: ' + storageError.message + '\nTry using smaller images (under 1 MB each).');
+                        document.getElementById('uploadMsg').textContent = '❌ Storage limit exceeded. Use smaller images.';
+                        document.getElementById('uploadMsg').style.color = '#cc0000';
+                        console.error('localStorage error:', storageError);
+                    }
                     setTimeout(() => document.getElementById('uploadMsg').textContent = '', 4000);
                 }
             }
@@ -115,21 +143,23 @@
                 const file = files[i];
                 const reader = new FileReader();
                 reader.onload = function(ev) {
-                    items.push({ data: ev.target.result, caption: caption });
+                    const dataUrl = ev.target.result;
+                    items.push({ data: dataUrl, caption: caption });
                     checkAndSave();
                 };
-                reader.onerror = function() {
-                    alert('Error reading file: ' + file.name);
-                    checkAndSave(); // continue anyway
+                reader.onerror = function(err) {
+                    alert('Error reading file: ' + file.name + '\n' + err);
+                    console.error('FileReader error:', err, file.name);
+                    checkAndSave(); // still count it to finish
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        // Initial load
+        // --- Initial load ---
         loadGallery();
 
-        // Hamburger
+        // --- Hamburger ---
         document.getElementById('hamburger').addEventListener('click', function() {
             document.getElementById('navLinks').classList.toggle('active');
         });
