@@ -102,7 +102,6 @@
         .login-footer a:hover {
             text-decoration: underline;
         }
-        /* small screen tweaks */
         @media (max-width: 480px) {
             .login-card { padding: 30px 20px; }
         }
@@ -140,7 +139,6 @@
     </div>
 
     <script>
-        // ---- Show/hide password ----
         document.getElementById('togglePwd').addEventListener('click', function() {
             const input = document.getElementById('password');
             const type = input.type === 'password' ? 'text' : 'password';
@@ -148,21 +146,18 @@
             this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
         });
 
-        // ---- Login handler ----
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
             const errorDiv = document.getElementById('loginError');
 
-            // Default credentials (you can change these)
+            // Change these credentials if you like
             const validUser = 'admin';
             const validPass = 'admin123';
 
             if (username === validUser && password === validPass) {
-                // Store login state
                 localStorage.setItem('adminLoggedIn', 'true');
-                // Redirect to gallery (or stay if needed)
                 window.location.href = 'gallery.html';
             } else {
                 errorDiv.textContent = '❌ Invalid username or password.';
