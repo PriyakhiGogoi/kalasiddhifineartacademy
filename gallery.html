@@ -33,7 +33,7 @@
         </div>
         <div id="galleryGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap:20px; margin-top:20px;"></div>
 
-        <!-- Admin Upload Section – shown immediately if logged in -->
+        <!-- Admin Upload Section -->
         <div id="adminUpload" style="display:none; margin-top:50px; padding:30px; background:#f8faff; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.06);">
             <div style="background:#d4edda; padding:10px 16px; border-radius:8px; margin-bottom:20px; color:#155724;">
                 <i class="fas fa-check-circle"></i> You are logged in as <strong>admin</strong> – you can upload images below.
@@ -63,7 +63,7 @@
     </footer>
 
     <script>
-        // ========== FIREBASE CONFIG ==========
+        // ========== YOUR FIREBASE CONFIG ==========
         const firebaseConfig = {
             apiKey: "AIzaSyAm_If5KB7innNH_U-IFamwm1VtDf3Mvmc",
             authDomain: "kala-siddhi.firebaseapp.com",
@@ -85,7 +85,7 @@
             document.getElementById('adminUpload').style.display = 'block';
         }
 
-        // Sign in anonymously (for Storage uploads) – do this silently
+        // Sign in anonymously (for Storage uploads)
         auth.signInAnonymously().catch(err => {
             console.warn('Anonymous auth failed:', err);
             document.getElementById('uploadMsg').textContent = '⚠️ Firebase auth error: ' + err.message;
@@ -120,7 +120,6 @@
             });
         }
 
-        // ========== DELETE ==========
         function deleteGalleryItem(key) {
             if (!confirm('Delete this image?')) return;
             db.ref('gallery/' + key).remove()
@@ -128,7 +127,7 @@
                 .catch(err => alert('Error: ' + err.message));
         }
 
-        // ========== UPLOAD ==========
+        // ========== UPLOAD FILES ==========
         async function uploadFiles(files) {
             const msg = document.getElementById('uploadMsg');
             const progressDiv = document.getElementById('uploadProgress');
