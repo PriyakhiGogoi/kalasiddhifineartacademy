@@ -30,7 +30,7 @@
         <h1>Competition Results</h1>
         <div id="resultsGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr)); gap:25px; margin-top:30px;"></div>
 
-        <!-- Admin Upload Section – shown immediately if logged in -->
+        <!-- Admin Upload Section -->
         <div id="adminUpload" style="display:none; margin-top:50px; padding:30px; background:#f8faff; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.06);">
             <div style="background:#d4edda; padding:10px 16px; border-radius:8px; margin-bottom:20px; color:#155724;">
                 <i class="fas fa-check-circle"></i> You are logged in as <strong>admin</strong> – you can upload results below.
@@ -58,7 +58,7 @@
     </footer>
 
     <script>
-        // ========== FIREBASE CONFIG (same as gallery) ==========
+        // ========== FIREBASE CONFIG (same) ==========
         const firebaseConfig = {
             apiKey: "AIzaSyAm_If5KB7innNH_U-IFamwm1VtDf3Mvmc",
             authDomain: "kala-siddhi.firebaseapp.com",
@@ -74,17 +74,13 @@
         const storage = firebase.storage();
         const auth = firebase.auth();
 
-        // ========== SHOW UPLOAD SECTION IMMEDIATELY IF ADMIN ==========
         const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
         if (isAdmin) {
             document.getElementById('adminUpload').style.display = 'block';
         }
 
-        // Sign in anonymously (for Storage uploads)
         auth.signInAnonymously().catch(err => {
-            console.warn('Anonymous auth failed:', err);
-            document.getElementById('uploadMsg').textContent = '⚠️ Firebase auth error: ' + err.message;
-            document.getElementById('uploadMsg').style.color = '#cc0000';
+            console.warn('Auth failed:', err);
         });
 
         // ========== LOAD RESULTS ==========
@@ -128,7 +124,6 @@
                 .catch(err => alert('Error: ' + err.message));
         }
 
-        // ========== UPLOAD RESULT ==========
         async function uploadResult() {
             const title = document.getElementById('resultTitle').value.trim();
             const imageFile = document.getElementById('resultImageInput').files[0];
