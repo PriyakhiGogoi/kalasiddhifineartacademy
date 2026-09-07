@@ -35,7 +35,7 @@
 
         <!-- Admin Upload Section -->
         <div id="adminUpload" style="display:none; margin-top:50px; padding:30px; background:#f8faff; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.06);">
-            <div style="background:#d4edda; padding:10px 16px; border-radius:8px; margin-bottom:20px; color:#155724;">
+            <div id="adminBanner" style="background:#d4edda; padding:10px 16px; border-radius:8px; margin-bottom:20px; color:#155724;">
                 <i class="fas fa-check-circle"></i> You are logged in as <strong>admin</strong> – you can upload images below.
             </div>
             <h3 style="margin-bottom:20px;"><i class="fas fa-upload"></i> Upload Images</h3>
@@ -47,6 +47,10 @@
                 <span id="progressText" style="color:#0066ff;">0%</span>
             </div>
             <p id="uploadMsg" style="margin-top:12px; color:#0066ff;"></p>
+            <div id="authError" style="margin-top:10px; padding:12px; background:#f8d7da; border-radius:8px; color:#721c24; display:none;">
+                <i class="fas fa-exclamation-triangle"></i> <span id="authErrorText"></span>
+                <button id="retryAuthBtn" class="btn btn-small" style="margin-left:10px; background:#28a745;">Retry</button>
+            </div>
         </div>
     </section>
 
@@ -63,7 +67,7 @@
     </footer>
 
     <script>
-        // ========== YOUR FIREBASE CONFIG ==========
+        // ========== FIREBASE CONFIG ==========
         const firebaseConfig = {
             apiKey: "AIzaSyAm_If5KB7innNH_U-IFamwm1VtDf3Mvmc",
             authDomain: "kala-siddhi.firebaseapp.com",
@@ -79,17 +83,37 @@
         const storage = firebase.storage();
         const auth = firebase.auth();
 
-        // ========== SHOW UPLOAD SECTION IMMEDIATELY IF ADMIN ==========
+        // ========== ADMIN CHECK ==========
         const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
         if (isAdmin) {
             document.getElementById('adminUpload').style.display = 'block';
         }
 
-        // Sign in anonymously (for Storage uploads)
-        auth.signInAnonymously().catch(err => {
-            console.warn('Anonymous auth failed:', err);
-            document.getElementById('uploadMsg').textContent = '⚠️ Firebase auth error: ' + err.message;
-            document.getElementById('uploadMsg').style.color = '#cc0000';
+        // ========== AUTH HANDLING ==========
+        function signInAnonymously() {
+            return auth.signInAnonymously()
+                .then(() => {
+                    document.getElementById('authError').style.display = 'none';
+                    document.getElementById('uploadMsg').textContent = '✅ Firebase connected.';
+                    document.getElementById('uploadMsg').style.color = '#0066ff';
+                    setTimeout(() => document.getElementById('uploadMsg').textContent = '', 2000);
+                })
+                .catch(err => {
+                    console.warn('Auth error:', err);
+                    const errorDiv = document.getElementById('authError');
+                    errorDiv.style.display = 'block';
+                    document.getElementById('authErrorText').textContent = '⚠️ ' + err.message + ' – Please enable Anonymous Authentication in Firebase Console.';
+                    document.getElementById('uploadMsg').textContent = '❌ Firebase auth failed – uploads disabled.';
+                    document.getElementById('uploadMsg').style.color = '#cc0000';
+                });
+        }
+
+        // Initial sign-in
+        signInAnonymously();
+
+        // Retry button
+        document.getElementById('retryAuthBtn').addEventListener('click', function() {
+            signInAnonymously();
         });
 
         // ========== LOAD GALLERY ==========
@@ -138,6 +162,19 @@
                 msg.textContent = '❌ Please select at least one image.';
                 msg.style.color = '#cc0000';
                 return;
+            }
+
+            // Check if user is authenticated
+            const user = auth.currentUser;
+            if (!user) {
+                msg.textContent = '❌ Not authenticated – please wait for Firebase connection.';
+                msg.style.color = '#cc0000';
+                // Try to sign in again
+                await signInAnonymously();
+                if (!auth.currentUser) {
+                    msg.textContent = '❌ Still not authenticated – check Firebase Console.';
+                    return;
+                }
             }
 
             progressDiv.style.display = 'block';
