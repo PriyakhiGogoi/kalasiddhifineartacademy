@@ -34,10 +34,10 @@
         </div>
         <div id="galleryGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap:20px; margin-top:20px;"></div>
 
-        <!-- Admin Upload Section -->
+        <!-- Admin Upload Section (visible only when logged in) -->
         <div id="adminUpload" style="display:none; margin-top:50px; padding:30px; background:#f8faff; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.06);">
-            <h3 style="margin-bottom:20px;"><i class="fas fa-upload"></i> Upload Images to Firebase</h3>
-            <p style="margin-bottom:12px; font-size:14px; color:#666;">Select multiple images. They will be stored in Firebase Storage and visible to everyone.</p>
+            <h3 style="margin-bottom:20px;"><i class="fas fa-upload"></i> Upload Images</h3>
+            <p style="margin-bottom:12px; font-size:14px; color:#666;">Select multiple images from your phone or computer. They will be stored in Firebase and visible to everyone.</p>
             <input type="file" id="galleryFileInput" accept="image/*" multiple required style="padding:10px; border:1px solid #ddd; border-radius:8px; width:100%; margin-bottom:12px;">
             <button id="uploadGalleryBtn" class="btn"><i class="fas fa-cloud-upload-alt"></i> Upload All</button>
             <div id="uploadProgress" style="margin-top:12px; display:none;">
@@ -48,8 +48,20 @@
         </div>
     </section>
 
+    <footer class="footer">
+        <div class="footer-content">
+            <h4>CONTACT US</h4>
+            <p>Phone: +919678556768</p>
+            <div class="footer-buttons">
+                <a href="gallery.html" class="btn"><i class="fas fa-images"></i> Gallery</a>
+                <a href="results.html" class="btn"><i class="fas fa-trophy"></i> Competition Results</a>
+            </div>
+            <p class="copyright">&copy; 2026 Kala Siddhi Fine Art Academy. All rights reserved.</p>
+        </div>
+    </footer>
+
     <script>
-        // ========== FIREBASE CONFIG ==========
+        // ========== FIREBASE CONFIG – REPLACE WITH YOUR OWN ==========
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -69,20 +81,15 @@
         const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
 
         // Sign in anonymously (required for Storage write)
-        auth.signInAnonymously().catch(err => {
-            console.error("Anonymous auth error:", err);
-            alert("Firebase auth failed. Please check your config.");
-        });
+        auth.signInAnonymously().catch(err => console.error(err));
 
         auth.onAuthStateChanged(user => {
             if (user && isAdmin) {
                 document.getElementById('adminUpload').style.display = 'block';
-            } else if (!user) {
-                console.warn("Not authenticated yet.");
             }
         });
 
-        // ========== LOAD GALLERY FROM FIREBASE ==========
+        // ========== LOAD GALLERY ==========
         function loadGallery() {
             const galleryRef = db.ref('gallery');
             galleryRef.on('value', (snapshot) => {
@@ -113,24 +120,13 @@
         // ========== DELETE IMAGE ==========
         function deleteGalleryItem(key) {
             if (!confirm('Delete this image?')) return;
-            // First, get the URL to delete from Storage (optional, but we'll do it)
-            const galleryRef = db.ref('gallery/' + key);
-            galleryRef.once('value', snapshot => {
-                const url = snapshot.val();
-                if (url) {
-                    // Extract file path from URL (assuming default format)
-                    // Firebase Storage URLs: https://firebasestorage.googleapis.com/...?alt=media&token=...
-                    // We can try to delete by reference if we know the path.
-                    // Since we saved with a unique name, we'll store the path separately or just skip deletion from Storage.
-                    // For simplicity, we'll only remove from Database.
-                }
-                galleryRef.remove()
-                    .then(() => console.log('Removed from DB'))
-                    .catch(err => alert('Error: ' + err.message));
-            });
+            // Remove from database (we don't delete from Storage to keep it simple)
+            db.ref('gallery/' + key).remove()
+                .then(() => console.log('Deleted'))
+                .catch(err => alert('Error: ' + err.message));
         }
 
-        // ========== UPLOAD TO FIREBASE STORAGE ==========
+        // ========== UPLOAD MULTIPLE FILES ==========
         async function uploadFiles(files) {
             const msg = document.getElementById('uploadMsg');
             const progressDiv = document.getElementById('uploadProgress');
@@ -143,19 +139,17 @@
                 return;
             }
 
-            // Show progress
             progressDiv.style.display = 'block';
             let uploaded = 0;
             const total = files.length;
-            const uploads = [];
+            const uploadPromises = [];
 
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const fileRef = storage.ref('gallery/' + Date.now() + '_' + file.name);
                 const uploadTask = fileRef.put(file);
-                uploads.push(uploadTask.then(async snapshot => {
+                uploadPromises.push(uploadTask.then(async snapshot => {
                     const url = await snapshot.ref.getDownloadURL();
-                    // Save URL to Realtime Database
                     await db.ref('gallery').push(url);
                     uploaded++;
                     const percent = Math.round((uploaded / total) * 100);
@@ -165,7 +159,7 @@
             }
 
             try {
-                await Promise.all(uploads);
+                await Promise.all(uploadPromises);
                 msg.textContent = `✅ ${total} image(s) uploaded successfully!`;
                 msg.style.color = '#0066ff';
                 progressDiv.style.display = 'none';
