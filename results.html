@@ -30,8 +30,11 @@
         <h1>Competition Results</h1>
         <div id="resultsGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr)); gap:25px; margin-top:30px;"></div>
 
-        <!-- Admin Upload -->
+        <!-- Admin Upload Section – shown immediately if logged in -->
         <div id="adminUpload" style="display:none; margin-top:50px; padding:30px; background:#f8faff; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.06);">
+            <div style="background:#d4edda; padding:10px 16px; border-radius:8px; margin-bottom:20px; color:#155724;">
+                <i class="fas fa-check-circle"></i> You are logged in as <strong>admin</strong> – you can upload results below.
+            </div>
             <h3 style="margin-bottom:20px;"><i class="fas fa-trophy"></i> Upload Result</h3>
             <p style="margin-bottom:12px; font-size:14px; color:#666;">Upload main image and optional result sheet.</p>
             <input type="file" id="resultImageInput" accept="image/*" required style="padding:10px; border:1px solid #ddd; border-radius:8px; width:100%; margin-bottom:10px;">
@@ -55,7 +58,7 @@
     </footer>
 
     <script>
-        // ========== SAME FIREBASE CONFIG ==========
+        // ========== FIREBASE CONFIG (same as gallery) ==========
         const firebaseConfig = {
             apiKey: "AIzaSyAm_If5KB7innNH_U-IFamwm1VtDf3Mvmc",
             authDomain: "kala-siddhi.firebaseapp.com",
@@ -71,13 +74,17 @@
         const storage = firebase.storage();
         const auth = firebase.auth();
 
+        // ========== SHOW UPLOAD SECTION IMMEDIATELY IF ADMIN ==========
         const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
+        if (isAdmin) {
+            document.getElementById('adminUpload').style.display = 'block';
+        }
 
-        auth.signInAnonymously().catch(err => console.error(err));
-        auth.onAuthStateChanged(user => {
-            if (user && isAdmin) {
-                document.getElementById('adminUpload').style.display = 'block';
-            }
+        // Sign in anonymously (for Storage uploads)
+        auth.signInAnonymously().catch(err => {
+            console.warn('Anonymous auth failed:', err);
+            document.getElementById('uploadMsg').textContent = '⚠️ Firebase auth error: ' + err.message;
+            document.getElementById('uploadMsg').style.color = '#cc0000';
         });
 
         // ========== LOAD RESULTS ==========
