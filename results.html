@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Competition Results - Kala Siddhi</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 </head>
 <body>
 
     <nav class="main-nav">
         <div class="nav-container">
-            <a href="index.html" class="nav-logo"><img src="img/logo.jpg" alt="Logo" width="140"></a>
+            <a href="index.html" class="nav-logo"><img src="img/logo.jpg" alt="Logo" width="140" /></a>
             <ul class="nav-links" id="navLinks">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="gallery.html">Gallery</a></li>
@@ -24,108 +28,151 @@
 
     <section class="about" style="max-width:1200px;">
         <h1>Competition Results</h1>
-        <div id="resultsGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr)); gap:25px; margin-top:30px;">
-            <!-- results injected here -->
-        </div>
+        <div id="resultsGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr)); gap:25px; margin-top:30px;"></div>
 
         <!-- Admin Upload -->
         <div id="adminUpload" style="display:none; margin-top:50px; padding:30px; background:#f8faff; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.06);">
             <h3 style="margin-bottom:20px;"><i class="fas fa-trophy"></i> Upload Result</h3>
-            <form id="resultUploadForm" style="display:flex; flex-direction:column; gap:16px; max-width:500px;">
-                <input type="file" id="resultImageInput" accept="image/*" required style="padding:10px; border:1px solid #ddd; border-radius:8px;">
-                <input type="text" id="resultTitle" placeholder="Title (e.g., 'Drawing Competition 2026')" required style="padding:12px; border:1px solid #ddd; border-radius:8px;">
-                <input type="file" id="resultSheetInput" accept="image/*" style="padding:10px; border:1px solid #ddd; border-radius:8px;">
-                <span style="font-size:14px; color:#666;">Optional: Upload result sheet image (e.g., scoreboard)</span>
-                <button type="submit" class="btn">Add Result</button>
-            </form>
+            <p style="margin-bottom:12px; font-size:14px; color:#666;">Upload main image and optional result sheet.</p>
+            <input type="file" id="resultImageInput" accept="image/*" required style="padding:10px; border:1px solid #ddd; border-radius:8px; width:100%; margin-bottom:10px;">
+            <input type="file" id="resultSheetInput" accept="image/*" style="padding:10px; border:1px solid #ddd; border-radius:8px; width:100%; margin-bottom:10px;">
+            <input type="text" id="resultTitle" placeholder="Title (e.g., 'Drawing Competition 2026')" required style="padding:12px; border:1px solid #ddd; border-radius:8px; width:100%; margin-bottom:15px;">
+            <button id="uploadResultBtn" class="btn"><i class="fas fa-upload"></i> Upload Result</button>
             <p id="uploadMsg" style="margin-top:12px; color:#0066ff;"></p>
         </div>
     </section>
 
+    <footer class="footer">
+        <div class="footer-content">
+            <h4>CONTACT US</h4>
+            <p>Phone: +919678556768</p>
+            <div class="footer-buttons">
+                <a href="gallery.html" class="btn"><i class="fas fa-images"></i> Gallery</a>
+                <a href="results.html" class="btn"><i class="fas fa-trophy"></i> Competition Results</a>
+            </div>
+            <p class="copyright">&copy; 2026 Kala Siddhi Fine Art Academy. All rights reserved.</p>
+        </div>
+    </footer>
+
     <script>
+        // ========== SAME FIREBASE CONFIG ==========
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const storage = firebase.storage();
+        const auth = firebase.auth();
+
         const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
-        if (isAdmin) {
-            document.getElementById('adminUpload').style.display = 'block';
-        }
 
-        function loadResults() {
-            const stored = localStorage.getItem('resultItems');
-            let items = stored ? JSON.parse(stored) : [];
-            const grid = document.getElementById('resultsGrid');
-            grid.innerHTML = '';
-            if (items.length === 0) {
-                grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888;">No results uploaded yet.</p>';
-                return;
-            }
-            items.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.style.cssText = 'background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08); transition:0.3s;';
-                let html = `
-                    <img src="${item.image}" alt="${item.title}" style="width:100%; height:180px; object-fit:cover; display:block;">
-                    <div style="padding:12px;">
-                        <h4 style="margin:0 0 6px; color:#1a1a4e;">${item.title}</h4>
-                `;
-                if (item.sheet) {
-                    html += `<img src="${item.sheet}" alt="Result Sheet" style="width:100%; max-height:150px; object-fit:contain; border-radius:6px; margin-top:8px;">`;
-                }
-                html += `
-                        ${isAdmin ? `<button class="btn btn-small btn-danger" style="margin-top:10px;" onclick="deleteResult(${index})"><i class="fas fa-trash"></i> Remove</button>` : ''}
-                    </div>
-                `;
-                div.innerHTML = html;
-                grid.appendChild(div);
-            });
-        }
-
-        function deleteResult(index) {
-            if (!confirm('Delete this result?')) return;
-            let items = JSON.parse(localStorage.getItem('resultItems') || '[]');
-            items.splice(index, 1);
-            localStorage.setItem('resultItems', JSON.stringify(items));
-            loadResults();
-        }
-
-        document.getElementById('resultUploadForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const imageFile = document.getElementById('resultImageInput').files[0];
-            const sheetFile = document.getElementById('resultSheetInput').files[0];
-            const title = document.getElementById('resultTitle').value.trim();
-            if (!imageFile || !title) return;
-
-            const reader1 = new FileReader();
-            const reader2 = sheetFile ? new FileReader() : null;
-
-            let imageData = null, sheetData = null;
-            let loaded = 0;
-
-            function checkAndSave() {
-                loaded++;
-                if (loaded === (sheetFile ? 2 : 1)) {
-                    let items = JSON.parse(localStorage.getItem('resultItems') || '[]');
-                    items.push({ image: imageData, title: title, sheet: sheetData });
-                    localStorage.setItem('resultItems', JSON.stringify(items));
-                    document.getElementById('uploadMsg').textContent = '✅ Result added successfully!';
-                    document.getElementById('resultUploadForm').reset();
-                    loadResults();
-                    setTimeout(() => document.getElementById('uploadMsg').textContent = '', 4000);
-                }
-            }
-
-            reader1.onload = function(e) { imageData = e.target.result; checkAndSave(); };
-            reader1.readAsDataURL(imageFile);
-
-            if (sheetFile) {
-                reader2.onload = function(e) { sheetData = e.target.result; checkAndSave(); };
-                reader2.readAsDataURL(sheetFile);
-            } else {
-                // no sheet
-                setTimeout(checkAndSave, 50);
+        auth.signInAnonymously().catch(err => console.error(err));
+        auth.onAuthStateChanged(user => {
+            if (user && isAdmin) {
+                document.getElementById('adminUpload').style.display = 'block';
             }
         });
 
+        // ========== LOAD RESULTS ==========
+        function loadResults() {
+            const resultsRef = db.ref('results');
+            resultsRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                const items = data ? Object.values(data) : [];
+                const grid = document.getElementById('resultsGrid');
+                grid.innerHTML = '';
+                if (items.length === 0) {
+                    grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888;">No results uploaded yet.</p>';
+                } else {
+                    items.forEach((item, index) => {
+                        const div = document.createElement('div');
+                        div.style.cssText = 'background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08); transition:0.3s;';
+                        const key = Object.keys(data)[index];
+                        let html = `
+                            <img src="${item.image}" alt="${item.title}" style="width:100%; height:180px; object-fit:cover; display:block;">
+                            <div style="padding:12px;">
+                                <h4 style="margin:0 0 6px; color:#1a1a4e;">${item.title}</h4>
+                        `;
+                        if (item.sheet) {
+                            html += `<img src="${item.sheet}" alt="Result Sheet" style="width:100%; max-height:150px; object-fit:contain; border-radius:6px; margin-top:8px;">`;
+                        }
+                        html += `
+                                ${isAdmin ? `<button class="btn btn-small btn-danger" style="margin-top:10px;" onclick="deleteResult('${key}')"><i class="fas fa-trash"></i> Remove</button>` : ''}
+                            </div>
+                        `;
+                        div.innerHTML = html;
+                        grid.appendChild(div);
+                    });
+                }
+            });
+        }
+
+        function deleteResult(key) {
+            if (!confirm('Delete this result?')) return;
+            db.ref('results/' + key).remove()
+                .then(() => console.log('Deleted'))
+                .catch(err => alert('Error: ' + err.message));
+        }
+
+        // ========== UPLOAD RESULT ==========
+        async function uploadResult() {
+            const title = document.getElementById('resultTitle').value.trim();
+            const imageFile = document.getElementById('resultImageInput').files[0];
+            const sheetFile = document.getElementById('resultSheetInput').files[0];
+            const msg = document.getElementById('uploadMsg');
+
+            if (!title || !imageFile) {
+                msg.textContent = '❌ Title and main image are required.';
+                msg.style.color = '#cc0000';
+                return;
+            }
+
+            try {
+                msg.textContent = '⏳ Uploading...';
+                msg.style.color = '#0066ff';
+
+                const imageRef = storage.ref('results/' + Date.now() + '_' + imageFile.name);
+                await imageRef.put(imageFile);
+                const imageUrl = await imageRef.getDownloadURL();
+
+                let sheetUrl = null;
+                if (sheetFile) {
+                    const sheetRef = storage.ref('results/sheets/' + Date.now() + '_' + sheetFile.name);
+                    await sheetRef.put(sheetFile);
+                    sheetUrl = await sheetRef.getDownloadURL();
+                }
+
+                await db.ref('results').push({
+                    title: title,
+                    image: imageUrl,
+                    sheet: sheetUrl
+                });
+
+                msg.textContent = '✅ Result uploaded successfully!';
+                msg.style.color = '#0066ff';
+                document.getElementById('resultTitle').value = '';
+                document.getElementById('resultImageInput').value = '';
+                document.getElementById('resultSheetInput').value = '';
+                setTimeout(() => msg.textContent = '', 4000);
+            } catch (err) {
+                msg.textContent = '❌ Error: ' + err.message;
+                msg.style.color = '#cc0000';
+            }
+        }
+
+        document.getElementById('uploadResultBtn').addEventListener('click', uploadResult);
+
+        // ========== INIT ==========
         loadResults();
 
-        // Hamburger
+        // ========== HAMBURGER ==========
         document.getElementById('hamburger').addEventListener('click', function() {
             document.getElementById('navLinks').classList.toggle('active');
         });
