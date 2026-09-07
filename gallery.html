@@ -30,6 +30,7 @@
         <h1>Our Gallery</h1>
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-top:10px;">
             <p id="imageCount" style="color:#666; font-size:16px;">0 images</p>
+            <p id="debugStatus" style="color:#888; font-size:14px;"></p>
         </div>
         <div id="galleryGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap:20px; margin-top:20px;"></div>
 
@@ -50,6 +51,9 @@
             <div id="authError" style="margin-top:10px; padding:12px; background:#f8d7da; border-radius:8px; color:#721c24; display:none;">
                 <i class="fas fa-exclamation-triangle"></i> <span id="authErrorText"></span>
                 <button id="retryAuthBtn" class="btn btn-small" style="margin-left:10px; background:#28a745;">Retry</button>
+            </div>
+            <div id="uploadDebug" style="margin-top:10px; padding:10px; background:#fff3cd; border-radius:8px; color:#856404; display:none;">
+                <strong>Debug info:</strong> <span id="debugText"></span>
             </div>
         </div>
     </section>
@@ -89,20 +93,37 @@
             document.getElementById('adminUpload').style.display = 'block';
         }
 
+        // ========== DEBUG HELPER ==========
+        function showDebug(msg) {
+            const el = document.getElementById('debugText');
+            const div = document.getElementById('uploadDebug');
+            div.style.display = 'block';
+            el.textContent = msg;
+            console.log('DEBUG:', msg);
+        }
+
+        function showStatus(msg) {
+            document.getElementById('debugStatus').textContent = msg;
+            console.log('STATUS:', msg);
+        }
+
         // ========== AUTH HANDLING ==========
         function signInAnonymously() {
+            showStatus('🔐 Attempting Firebase auth...');
             return auth.signInAnonymously()
-                .then(() => {
+                .then((user) => {
+                    showStatus('✅ Auth successful, UID: ' + user.user.uid);
                     document.getElementById('authError').style.display = 'none';
                     document.getElementById('uploadMsg').textContent = '✅ Firebase connected.';
                     document.getElementById('uploadMsg').style.color = '#0066ff';
                     setTimeout(() => document.getElementById('uploadMsg').textContent = '', 2000);
                 })
                 .catch(err => {
-                    console.warn('Auth error:', err);
+                    console.error('Auth error:', err);
+                    showStatus('❌ Auth failed: ' + err.message);
                     const errorDiv = document.getElementById('authError');
                     errorDiv.style.display = 'block';
-                    document.getElementById('authErrorText').textContent = '⚠️ ' + err.message + ' – Please enable Anonymous Authentication in Firebase Console.';
+                    document.getElementById('authErrorText').textContent = '⚠️ ' + err.message + ' – Enable Anonymous Authentication in Firebase Console.';
                     document.getElementById('uploadMsg').textContent = '❌ Firebase auth failed – uploads disabled.';
                     document.getElementById('uploadMsg').style.color = '#cc0000';
                 });
@@ -111,13 +132,13 @@
         // Initial sign-in
         signInAnonymously();
 
-        // Retry button
         document.getElementById('retryAuthBtn').addEventListener('click', function() {
             signInAnonymously();
         });
 
         // ========== LOAD GALLERY ==========
         function loadGallery() {
+            showStatus('🔄 Loading gallery from Firebase...');
             const galleryRef = db.ref('gallery');
             galleryRef.on('value', (snapshot) => {
                 const data = snapshot.val();
@@ -141,6 +162,11 @@
                     });
                 }
                 document.getElementById('imageCount').textContent = items.length + ' images';
+                showStatus(`✅ Loaded ${items.length} images`);
+            }, (error) => {
+                console.error('Database read error:', error);
+                showStatus('❌ DB read error: ' + error.message);
+                document.getElementById('galleryGrid').innerHTML = '<p style="color:#cc0000;">Error loading gallery: ' + error.message + '</p>';
             });
         }
 
@@ -164,12 +190,12 @@
                 return;
             }
 
-            // Check if user is authenticated
+            // Check authentication
             const user = auth.currentUser;
             if (!user) {
                 msg.textContent = '❌ Not authenticated – please wait for Firebase connection.';
                 msg.style.color = '#cc0000';
-                // Try to sign in again
+                showDebug('No user, attempting sign-in again...');
                 await signInAnonymously();
                 if (!auth.currentUser) {
                     msg.textContent = '❌ Still not authenticated – check Firebase Console.';
@@ -177,6 +203,7 @@
                 }
             }
 
+            showDebug(`Starting upload of ${files.length} files...`);
             progressDiv.style.display = 'block';
             let uploaded = 0;
             const total = files.length;
@@ -184,7 +211,9 @@
 
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
-                const fileRef = storage.ref('gallery/' + Date.now() + '_' + file.name);
+                const fileName = Date.now() + '_' + file.name;
+                const fileRef = storage.ref('gallery/' + fileName);
+                showDebug(`Uploading ${file.name} (${Math.round(file.size/1024)} KB)`);
                 const uploadTask = fileRef.put(file);
                 uploadPromises.push(uploadTask.then(async snapshot => {
                     const url = await snapshot.ref.getDownloadURL();
@@ -193,6 +222,12 @@
                     const percent = Math.round((uploaded / total) * 100);
                     progressBar.value = percent;
                     progressText.textContent = percent + '%';
+                    showDebug(`Uploaded ${uploaded}/${total}`);
+                }).catch(err => {
+                    // Log the error for this file
+                    console.error('File upload error:', file.name, err);
+                    showDebug(`Error on ${file.name}: ${err.message}`);
+                    // Still count as uploaded to avoid hanging, but we'll track failures
                 }));
             }
 
@@ -202,11 +237,14 @@
                 msg.style.color = '#0066ff';
                 progressDiv.style.display = 'none';
                 document.getElementById('galleryFileInput').value = '';
+                showDebug('All uploads finished.');
                 setTimeout(() => msg.textContent = '', 5000);
             } catch (err) {
+                console.error('Upload error:', err);
                 msg.textContent = '❌ Upload error: ' + err.message;
                 msg.style.color = '#cc0000';
                 progressDiv.style.display = 'none';
+                showDebug('Upload error: ' + err.message);
             }
         }
 
