@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kala Siddhi Fine Art Academy</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <img src="img/logo.jpg" alt="Kala Siddhi Logo" width="140">
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+                <li><a href="results.html">Competition Results</a></li>
+                <li><a href="login.html" class="admin-link"><i class="fas fa-user-shield"></i> Admin</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="header">
+        <div class="hero">
+            <div class="content">
+                <h1 class="anim">KALA SIDDHI</h1>
+                <h3 class="anim">FINE ART ACADEMY</h3>
+                <p class="anim">ESTD: 5th June 2009, Sivasagar, Assam</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section class="about" id="about">
+        <h1>ABOUT US</h1>
+        <p>Welcome to KALA SIDDHI Fine Art Academy, where we provide personalized guidance in painting, drawing, craft and more, helping children's passions and develop their artistic skills. Whether a beginner looking to learn the basics or an advanced artist seeking to refine skills, our Kala Siddhi Fine Art Academy is here to support everyone.</p>
+    </section>
+
+    <!-- Courses -->
+    <section class="course" id="course">
+        <h1>COURSES WE OFFER</h1>
+        <div class="row">
+            <div class="course-col">
+                <h3>Preliminary</h3>
+                <p>5 year course from KG to class 5. Here we make the students learn the basic drawings, colouring techniques etc.</p>
+            </div>
+            <div class="course-col">
+                <h3>Diploma</h3>
+                <p>5 year course from 6 to class 10 (and more). Here we make the students learn the advance sketching, colouring techniques including water color, oil pastel, acrylic on canvas, crafts etc.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Principal -->
+    <section class="principal">
+        <h1>Message from Principal</h1>
+        <img src="img/IMG (6).jpg" alt="Principal Simanta Khatowal">
+        <p>Hello students, <b>I'm Simanta Khatowal</b>, the principal of Kala Siddhi Fine Art Academy, Betbari. Kala Siddhi was established on 5th June 2009 and is located in Betbari, Sivasagar, Assam. The art school is Assam Government registered on the registration no- RS/SIVA/256/G/02 of 2021-2022. Our school is dedicated to helping students explore and develop their unique artistic talents. With experienced teachers and a supportive environment makes us distinct from other art schools. Here are some beautiful moments of our school, click here to see the <a href="gallery.html">gallery</a>.</p>
+    </section>
+
+    <!-- Footer -->
+    <section class="footer">
+        <h4>CONTACT US</h4>
+        <p>For more information contact us on this number <br> Phone No: +919678556768</p>
+        <p style="margin-top:10px; font-size:14px; color:#888;">&copy; 2026 Kala Siddhi Fine Art Academy. All rights reserved.</p>
+    </section>
+
+    <script>
+        // Hamburger toggle
+        document.getElementById('hamburger').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('active');
+        });
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('navLinks').classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>

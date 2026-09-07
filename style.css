@@ -1,0 +1,278 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ----- NAVIGATION ----- */
+.main-nav {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 8px 0;
+}
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+.nav-logo img {
+    display: block;
+}
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+.nav-links li a {
+    text-decoration: none;
+    color: #1a1a4e;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: color 0.3s;
+    padding: 6px 12px;
+    border-radius: 30px;
+}
+.nav-links li a:hover {
+    color: #0066ff;
+    background: rgba(0,102,255,0.08);
+}
+.admin-link {
+    background: linear-gradient(45deg, #82CAFF, #0000ff);
+    color: #fff !important;
+    padding: 8px 20px !important;
+    border-radius: 30px !important;
+    box-shadow: 0 4px 10px rgba(0,0,255,0.3);
+    transition: 0.3s;
+}
+.admin-link:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 14px rgba(0,0,255,0.4);
+    background: linear-gradient(45deg, #6ab0e8, #0000cc) !important;
+}
+.hamburger {
+    display: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #1a1a4e;
+}
+
+/* ----- HERO ----- */
+.hero {
+    width: 100%;
+    min-height: 80vh;
+    background-image: linear-gradient(rgba(117,142,183,0.5), rgba(117,142,183,0.5)), url(img/IMG\ \(18\).jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.content {
+    text-align: center;
+    padding: 20px;
+}
+.content h1 {
+    font-size: 130px;
+    color: #030058;
+    font-weight: 800;
+    letter-spacing: 4px;
+    animation: moveup 0.5s linear forwards;
+    opacity: 0;
+    transform: translateY(30px);
+}
+.content h3 {
+    font-size: 60px;
+    color: #fff;
+    font-weight: 600;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    animation: moveup 0.5s linear forwards;
+    animation-delay: 0.3s;
+    opacity: 0;
+    transform: translateY(30px);
+}
+.content p {
+    font-size: 32px;
+    font-weight: 600;
+    color: #030058;
+    animation: moveup 0.5s linear forwards;
+    animation-delay: 0.6s;
+    opacity: 0;
+    transform: translateY(30px);
+}
+@keyframes moveup {
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ----- ABOUT / COURSES / PRINCIPAL ----- */
+.about, .course, .principal {
+    max-width: 1100px;
+    margin: 60px auto;
+    padding: 0 20px;
+}
+.about h1, .course h1, .principal h1 {
+    font-size: 48px;
+    font-weight: 700;
+    text-align: center;
+    color: #1a1a4e;
+    margin-bottom: 20px;
+}
+.about p, .principal p {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #333;
+    text-align: justify;
+}
+.principal img {
+    display: block;
+    width: 80%;
+    max-width: 500px;
+    margin: 30px auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+.principal a {
+    color: #0066ff;
+    font-weight: 600;
+    text-decoration: none;
+}
+.principal a:hover {
+    text-decoration: underline;
+}
+
+.row {
+    display: flex;
+    gap: 30px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+.course-col {
+    flex: 1;
+    min-width: 250px;
+    background: #fff3f3;
+    padding: 30px 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: 0.4s;
+    text-align: center;
+}
+.course-col:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+}
+.course-col h3 {
+    font-size: 26px;
+    margin-bottom: 12px;
+    color: #1a1a4e;
+}
+.course-col p {
+    font-size: 16px;
+    color: #444;
+}
+
+/* ----- FOOTER ----- */
+.footer {
+    background: #f0f4ff;
+    padding: 40px 20px;
+    text-align: center;
+    margin-top: 40px;
+}
+.footer h4 {
+    font-size: 28px;
+    color: #1a1a4e;
+    margin-bottom: 10px;
+}
+.footer p {
+    font-size: 18px;
+    color: #333;
+}
+
+/* ----- BUTTONS (global) ----- */
+.btn {
+    display: inline-block;
+    padding: 12px 32px;
+    background: linear-gradient(45deg, #82CAFF, #0000ff);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,255,0.3);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+}
+.btn:hover {
+    transform: scale(1.04);
+    box-shadow: 0 8px 20px rgba(0,0,255,0.4);
+    background: linear-gradient(45deg, #6ab0e8, #0000cc);
+}
+.btn-small {
+    padding: 8px 20px;
+    font-size: 14px;
+}
+.btn-danger {
+    background: linear-gradient(45deg, #ff6b6b, #cc0000);
+    box-shadow: 0 4px 14px rgba(255,0,0,0.3);
+}
+.btn-danger:hover {
+    background: linear-gradient(45deg, #e55555, #aa0000);
+    box-shadow: 0 8px 20px rgba(255,0,0,0.4);
+}
+.btn-outline {
+    background: transparent;
+    border: 2px solid #0000ff;
+    color: #0000ff;
+    box-shadow: none;
+}
+.btn-outline:hover {
+    background: #0000ff;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(0,0,255,0.3);
+}
+
+/* ----- RESPONSIVE ----- */
+@media (max-width: 900px) {
+    .content h1 { font-size: 80px; }
+    .content h3 { font-size: 40px; }
+    .content p { font-size: 24px; }
+    .about h1, .course h1, .principal h1 { font-size: 36px; }
+}
+@media (max-width: 700px) {
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        background: rgba(255,255,255,0.98);
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        padding: 20px 0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        gap: 15px;
+        text-align: center;
+    }
+    .nav-links.active {
+        display: flex;
+    }
+    .hamburger {
+        display: block;
+    }
+    .content h1 { font-size: 50px; }
+    .content h3 { font-size: 28px; }
+    .content p { font-size: 18px; }
+    .about h1, .course h1, .principal h1 { font-size: 28px; }
+    .row { flex-direction: column; }
+    .principal img { width: 90%; }
+}
