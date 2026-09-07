@@ -1,270 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Gallery - Kala Siddhi</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .gallery {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .gallery h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .gallery-grid img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 12px;
+            display: block;
+        }
+
+        .gallery-grid img:hover {
+            transform: scale(1.02);
+            transition: 0.3s;
+        }
+    </style>
 </head>
+
 <body>
 
+    <!-- Navigation -->
     <nav class="main-nav">
         <div class="nav-container">
-            <a href="index.html" class="nav-logo"><img src="img/logo.jpg" alt="Logo" width="140" /></a>
-            <ul class="nav-links" id="navLinks">
+
+            <a href="index.html" class="nav-logo">
+                <img src="img/logo.jpg" alt="Kala Siddhi Logo" width="140">
+            </a>
+
+            <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="gallery.html">Gallery</a></li>
                 <li><a href="results.html">Competition Results</a></li>
-                <li><a href="login.html" class="admin-link"><i class="fas fa-user-shield"></i> Admin</a></li>
             </ul>
-            <div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+
         </div>
     </nav>
 
-    <section class="about" style="max-width:1200px;">
-        <h1>Our Gallery</h1>
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-top:10px;">
-            <p id="imageCount" style="color:#666; font-size:16px;">0 images</p>
-            <p id="debugStatus" style="color:#888; font-size:14px;"></p>
-        </div>
-        <div id="galleryGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap:20px; margin-top:20px;"></div>
 
-        <!-- Admin Upload Section -->
-        <div id="adminUpload" style="display:none; margin-top:50px; padding:30px; background:#f8faff; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.06);">
-            <div id="adminBanner" style="background:#d4edda; padding:10px 16px; border-radius:8px; margin-bottom:20px; color:#155724;">
-                <i class="fas fa-check-circle"></i> You are logged in as <strong>admin</strong> – you can upload images below.
-            </div>
-            <h3 style="margin-bottom:20px;"><i class="fas fa-upload"></i> Upload Images</h3>
-            <p style="margin-bottom:12px; font-size:14px; color:#666;">Select multiple images – they will be stored in Firebase and visible to everyone.</p>
-            <input type="file" id="galleryFileInput" accept="image/*" multiple required style="padding:10px; border:1px solid #ddd; border-radius:8px; width:100%; margin-bottom:12px;">
-            <button id="uploadGalleryBtn" class="btn"><i class="fas fa-cloud-upload-alt"></i> Upload All</button>
-            <div id="uploadProgress" style="margin-top:12px; display:none;">
-                <progress id="progressBar" value="0" max="100" style="width:100%; height:20px;"></progress>
-                <span id="progressText" style="color:#0066ff;">0%</span>
-            </div>
-            <p id="uploadMsg" style="margin-top:12px; color:#0066ff;"></p>
-            <div id="authError" style="margin-top:10px; padding:12px; background:#f8d7da; border-radius:8px; color:#721c24; display:none;">
-                <i class="fas fa-exclamation-triangle"></i> <span id="authErrorText"></span>
-                <button id="retryAuthBtn" class="btn btn-small" style="margin-left:10px; background:#28a745;">Retry</button>
-            </div>
-            <div id="uploadDebug" style="margin-top:10px; padding:10px; background:#fff3cd; border-radius:8px; color:#856404; display:none;">
-                <strong>Debug info:</strong> <span id="debugText"></span>
-            </div>
+    <!-- Gallery -->
+    <section class="gallery">
+
+        <h1>Our Gallery</h1>
+
+        <div class="gallery-grid">
+
+            <img src="artwork/image (1).jpeg" alt="Artwork">
+            <img src="artwork/image (1).jpg" alt="Artwork">
+            <img src="artwork/image (10).jpeg" alt="Artwork">
+            <img src="artwork/image (10).jpg" alt="Artwork">
+            <img src="artwork/image (11).jpeg" alt="Artwork">
+            <img src="artwork/image (11).jpg" alt="Artwork">
+            <img src="artwork/image (12).jpeg" alt="Artwork">
+            <img src="artwork/image (12).jpg" alt="Artwork">
+            <img src="artwork/image (13).jpeg" alt="Artwork">
+            <img src="artwork/image (13).jpg" alt="Artwork">
+            <img src="artwork/image (14).jpeg" alt="Artwork">
+            <img src="artwork/image (14).jpg" alt="Artwork">
+            <img src="artwork/image (15).jpeg" alt="Artwork">
+            <img src="artwork/image (16).jpeg" alt="Artwork">
+            <img src="artwork/image (15).jpg" alt="Artwork">
+            <img src="artwork/image (16).jpg" alt="Artwork">
+            <img src="artwork/image (17).jpeg" alt="Artwork">
+            <img src="artwork/image (17).jpg" alt="Artwork">
+            <img src="artwork/image (18).jpeg" alt="Artwork">
+            <img src="artwork/image (18).jpg" alt="Artwork">
+            <img src="artwork/image (19).jpeg" alt="Artwork">
+            <img src="artwork/image (2).jpeg" alt="Artwork">
+            <img src="artwork/image (2).jpg" alt="Artwork">
+            <img src="artwork/image (20).jpeg" alt="Artwork">
+            <img src="artwork/image (20).jpg" alt="Artwork">
+            <img src="artwork/image (21).jpeg" alt="Artwork">
+            <img src="artwork/image (22).jpeg" alt="Artwork">
+            <img src="artwork/image (23).jpeg" alt="Artwork">
+            <img src="artwork/image (24).jpeg" alt="Artwork">
+            <img src="artwork/image (25).jpeg" alt="Artwork">
+            <img src="artwork/image (26).jpeg" alt="Artwork">
+            <img src="artwork/image (27).jpeg" alt="Artwork">
+            <img src="artwork/image (28).jpeg" alt="Artwork">
+            <img src="artwork/image (29).jpeg" alt="Artwork">
+            <img src="artwork/image (30).jpeg" alt="Artwork">
+            <img src="artwork/image (31).jpeg" alt="Artwork">
+            <img src="artwork/image (3).jpeg" alt="Artwork">
+            <img src="artwork/image (33).jpeg" alt="Artwork">
+            <img src="artwork/image (3).jpg" alt="Artwork">
+            <img src="artwork/image (4).jpeg" alt="Artwork">
+            <img src="artwork/image (4).jpg" alt="Artwork">
+            <img src="artwork/image (5).jpeg" alt="Artwork">
+            <img src="artwork/image (5).jpg" alt="Artwork">
+            <img src="artwork/image (6).jpeg" alt="Artwork">
+            <img src="artwork/image (6).jpg" alt="Artwork">
+            <img src="artwork/image (7).jpeg" alt="Artwork">
+            <img src="artwork/image (8).jpeg" alt="Artwork">
+            <img src="artwork/image (9).jpg" alt="Artwork">
+            <img src="artwork/image (9).jpeg" alt="Artwork">
+            <img src="artwork/image (8).jpg" alt="Artwork">
         </div>
+
     </section>
 
-    <footer class="footer">
-        <div class="footer-content">
-            <h4>CONTACT US</h4>
-            <p>Phone: +919678556768</p>
-            <div class="footer-buttons">
-                <a href="gallery.html" class="btn"><i class="fas fa-images"></i> Gallery</a>
-                <a href="results.html" class="btn"><i class="fas fa-trophy"></i> Competition Results</a>
-            </div>
-            <p class="copyright">&copy; 2026 Kala Siddhi Fine Art Academy. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <script>
-        // ========== FIREBASE CONFIG ==========
-        const firebaseConfig = {
-            apiKey: "AIzaSyAm_If5KB7innNH_U-IFamwm1VtDf3Mvmc",
-            authDomain: "kala-siddhi.firebaseapp.com",
-            projectId: "kala-siddhi",
-            storageBucket: "kala-siddhi.firebasestorage.app",
-            messagingSenderId: "691628442738",
-            appId: "1:691628442738:web:cd4dc0386ba6cabc3baeeb",
-            measurementId: "G-KBQ154WV8T"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const storage = firebase.storage();
-        const auth = firebase.auth();
-
-        // ========== ADMIN CHECK ==========
-        const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
-        if (isAdmin) {
-            document.getElementById('adminUpload').style.display = 'block';
-        }
-
-        // ========== DEBUG HELPER ==========
-        function showDebug(msg) {
-            const el = document.getElementById('debugText');
-            const div = document.getElementById('uploadDebug');
-            div.style.display = 'block';
-            el.textContent = msg;
-            console.log('DEBUG:', msg);
-        }
-
-        function showStatus(msg) {
-            document.getElementById('debugStatus').textContent = msg;
-            console.log('STATUS:', msg);
-        }
-
-        // ========== AUTH HANDLING ==========
-        function signInAnonymously() {
-            showStatus('🔐 Attempting Firebase auth...');
-            return auth.signInAnonymously()
-                .then((user) => {
-                    showStatus('✅ Auth successful, UID: ' + user.user.uid);
-                    document.getElementById('authError').style.display = 'none';
-                    document.getElementById('uploadMsg').textContent = '✅ Firebase connected.';
-                    document.getElementById('uploadMsg').style.color = '#0066ff';
-                    setTimeout(() => document.getElementById('uploadMsg').textContent = '', 2000);
-                })
-                .catch(err => {
-                    console.error('Auth error:', err);
-                    showStatus('❌ Auth failed: ' + err.message);
-                    const errorDiv = document.getElementById('authError');
-                    errorDiv.style.display = 'block';
-                    document.getElementById('authErrorText').textContent = '⚠️ ' + err.message + ' – Enable Anonymous Authentication in Firebase Console.';
-                    document.getElementById('uploadMsg').textContent = '❌ Firebase auth failed – uploads disabled.';
-                    document.getElementById('uploadMsg').style.color = '#cc0000';
-                });
-        }
-
-        // Initial sign-in
-        signInAnonymously();
-
-        document.getElementById('retryAuthBtn').addEventListener('click', function() {
-            signInAnonymously();
-        });
-
-        // ========== LOAD GALLERY ==========
-        function loadGallery() {
-            showStatus('🔄 Loading gallery from Firebase...');
-            const galleryRef = db.ref('gallery');
-            galleryRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                const items = data ? Object.values(data) : [];
-                const grid = document.getElementById('galleryGrid');
-                grid.innerHTML = '';
-                if (items.length === 0) {
-                    grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888;">No images in gallery yet.</p>';
-                } else {
-                    items.forEach((url, index) => {
-                        const div = document.createElement('div');
-                        div.style.cssText = 'background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08); transition:0.3s;';
-                        const key = Object.keys(data)[index];
-                        div.innerHTML = `
-                            <img src="${url}" alt="Gallery" style="width:100%; height:200px; object-fit:cover; display:block;">
-                            <div style="padding:12px; display:flex; justify-content:flex-end;">
-                                ${isAdmin ? `<button class="btn btn-small btn-danger" onclick="deleteGalleryItem('${key}')"><i class="fas fa-trash"></i></button>` : ''}
-                            </div>
-                        `;
-                        grid.appendChild(div);
-                    });
-                }
-                document.getElementById('imageCount').textContent = items.length + ' images';
-                showStatus(`✅ Loaded ${items.length} images`);
-            }, (error) => {
-                console.error('Database read error:', error);
-                showStatus('❌ DB read error: ' + error.message);
-                document.getElementById('galleryGrid').innerHTML = '<p style="color:#cc0000;">Error loading gallery: ' + error.message + '</p>';
-            });
-        }
-
-        function deleteGalleryItem(key) {
-            if (!confirm('Delete this image?')) return;
-            db.ref('gallery/' + key).remove()
-                .then(() => console.log('Deleted'))
-                .catch(err => alert('Error: ' + err.message));
-        }
-
-        // ========== UPLOAD FILES ==========
-        async function uploadFiles(files) {
-            const msg = document.getElementById('uploadMsg');
-            const progressDiv = document.getElementById('uploadProgress');
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
-
-            if (!files.length) {
-                msg.textContent = '❌ Please select at least one image.';
-                msg.style.color = '#cc0000';
-                return;
-            }
-
-            // Check authentication
-            const user = auth.currentUser;
-            if (!user) {
-                msg.textContent = '❌ Not authenticated – please wait for Firebase connection.';
-                msg.style.color = '#cc0000';
-                showDebug('No user, attempting sign-in again...');
-                await signInAnonymously();
-                if (!auth.currentUser) {
-                    msg.textContent = '❌ Still not authenticated – check Firebase Console.';
-                    return;
-                }
-            }
-
-            showDebug(`Starting upload of ${files.length} files...`);
-            progressDiv.style.display = 'block';
-            let uploaded = 0;
-            const total = files.length;
-            const uploadPromises = [];
-
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                const fileName = Date.now() + '_' + file.name;
-                const fileRef = storage.ref('gallery/' + fileName);
-                showDebug(`Uploading ${file.name} (${Math.round(file.size/1024)} KB)`);
-                const uploadTask = fileRef.put(file);
-                uploadPromises.push(uploadTask.then(async snapshot => {
-                    const url = await snapshot.ref.getDownloadURL();
-                    await db.ref('gallery').push(url);
-                    uploaded++;
-                    const percent = Math.round((uploaded / total) * 100);
-                    progressBar.value = percent;
-                    progressText.textContent = percent + '%';
-                    showDebug(`Uploaded ${uploaded}/${total}`);
-                }).catch(err => {
-                    // Log the error for this file
-                    console.error('File upload error:', file.name, err);
-                    showDebug(`Error on ${file.name}: ${err.message}`);
-                    // Still count as uploaded to avoid hanging, but we'll track failures
-                }));
-            }
-
-            try {
-                await Promise.all(uploadPromises);
-                msg.textContent = `✅ ${total} image(s) uploaded successfully!`;
-                msg.style.color = '#0066ff';
-                progressDiv.style.display = 'none';
-                document.getElementById('galleryFileInput').value = '';
-                showDebug('All uploads finished.');
-                setTimeout(() => msg.textContent = '', 5000);
-            } catch (err) {
-                console.error('Upload error:', err);
-                msg.textContent = '❌ Upload error: ' + err.message;
-                msg.style.color = '#cc0000';
-                progressDiv.style.display = 'none';
-                showDebug('Upload error: ' + err.message);
-            }
-        }
-
-        document.getElementById('uploadGalleryBtn').addEventListener('click', function() {
-            const files = document.getElementById('galleryFileInput').files;
-            uploadFiles(files);
-        });
-
-        // ========== INIT ==========
-        loadGallery();
-
-        // ========== HAMBURGER ==========
-        document.getElementById('hamburger').addEventListener('click', function() {
-            document.getElementById('navLinks').classList.toggle('active');
-        });
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.getElementById('navLinks').classList.remove('active');
-            });
-        });
-    </script>
 </body>
 </html>
