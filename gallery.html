@@ -9,7 +9,7 @@
 </head>
 <body>
 
-    <!-- Navigation (same as index) -->
+    <!-- Navigation -->
     <nav class="main-nav">
         <div class="nav-container">
             <a href="index.html" class="nav-logo"><img src="img/logo.jpg" alt="Logo"></a>
@@ -29,20 +29,19 @@
             <!-- images injected here -->
         </div>
 
-        <!-- Admin Upload Section (shown only when logged in) -->
+        <!-- Admin Upload Section -->
         <div id="adminUpload" style="display:none; margin-top:50px; padding:30px; background:#f8faff; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.06);">
             <h3 style="margin-bottom:20px;"><i class="fas fa-upload"></i> Upload Gallery Images</h3>
             <form id="galleryUploadForm" style="display:flex; flex-direction:column; gap:16px; max-width:600px;">
-                <!-- Multiple file input -->
                 <input type="file" id="galleryImageInput" accept="image/*" multiple required style="padding:10px; border:1px solid #ddd; border-radius:8px;">
-                <input type="text" id="galleryCaption" placeholder="Caption (optional – will be applied to all uploaded images)" style="padding:12px; border:1px solid #ddd; border-radius:8px;">
+                <input type="text" id="galleryCaption" placeholder="Caption (optional – applied to all)" style="padding:12px; border:1px solid #ddd; border-radius:8px;">
                 <button type="submit" class="btn">Upload All Images</button>
             </form>
             <p id="uploadMsg" style="margin-top:12px; color:#0066ff;"></p>
         </div>
     </section>
 
-    <!-- Footer with quick links -->
+    <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
             <h4>CONTACT US</h4>
@@ -95,11 +94,11 @@
             loadGallery();
         }
 
-        // Handle multi-file upload
+        // Multi-file upload handler
         document.getElementById('galleryUploadForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const fileInput = document.getElementById('galleryImageInput');
-            const caption = document.getElementById('galleryCaption').value.trim();
+            const caption = document.getElementById('galleryCaption').value.trim() || 'Untitled';
             const files = fileInput.files;
             if (!files.length) {
                 document.getElementById('uploadMsg').textContent = '❌ Please select at least one image.';
@@ -127,8 +126,12 @@
                 const file = files[i];
                 const reader = new FileReader();
                 reader.onload = function(ev) {
-                    items.push({ data: ev.target.result, caption: caption || 'Untitled' });
+                    items.push({ data: ev.target.result, caption: caption });
                     checkAndSave();
+                };
+                reader.onerror = function() {
+                    alert('Error reading file: ' + file.name);
+                    checkAndSave(); // continue anyway
                 };
                 reader.readAsDataURL(file);
             }
